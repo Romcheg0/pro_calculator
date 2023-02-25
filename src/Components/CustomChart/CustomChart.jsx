@@ -3,7 +3,7 @@ import getProviderSum from '../../utils/getProviderSum'
 import './CustomChart.css'
 export default function CustomChart({ bars, storageGB, transferGB }) {
 	const [align, setAlign] = useState('horizontal') //Screen alignment
-	const [max, setMax] = useState(100) //Max total price of bar
+	const [max, setMax] = useState(50) //Max total price of bar
 	const [data, setData] = useState(bars) //Data copy to work with
 	function sortComparator(a, b) {
 		//Comparator for sorting the data
@@ -23,7 +23,7 @@ export default function CustomChart({ bars, storageGB, transferGB }) {
 			storageGB,
 			transferGB
 		) //get max price to set the chart size
-		tempMaxSum < 300 ? setMax(300) : setMax(tempMaxSum)
+		tempMaxSum < 50 ? setMax(50) : setMax(tempMaxSum)
 		let min = getProviderSum(temp[0], storageGB, transferGB) //get min price to set the color of the cheapest element
 
 		for (let item of data) {
@@ -42,11 +42,13 @@ export default function CustomChart({ bars, storageGB, transferGB }) {
 		}
 	}
 	useEffect(() => {
-		prepareData()
 		window.addEventListener('resize', () => {
 			window.innerWidth < 768 ? setAlign('vertical') : setAlign('horizontal')
 		})
 	}, [])
+	useEffect(() => {
+		prepareData()
+	}, [bars, storageGB, transferGB])
 
 	return (
 		<section className={`chart ${align}`}>
@@ -67,7 +69,8 @@ export default function CustomChart({ bars, storageGB, transferGB }) {
 							}
 						>
 							<div className={`bar__value ${align}`}>
-								{getProviderSum(bar, storageGB, transferGB) + bar.currency}
+								{getProviderSum(bar, storageGB, transferGB).toFixed(2) +
+									bar.currency}
 							</div>
 							<div
 								className={`bar__body ${align}`}
